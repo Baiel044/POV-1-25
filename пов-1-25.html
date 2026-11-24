@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Алгоритмдөө жана программалоо</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday study tool: calm, exact, a working textbook rather than a poster
+   IDEA an engineering exercise sheet: cobalt title strip, ruled panels, code set like a listing
+   PICTURE the step-by-step tracer itself: highlighted code line, live variables, array cells, output
+   COLOUR white ground, ink, cobalt #1240e0 strip and marks, pale #eef2ff zones, yellow line highlight
+   TYPE Inter Tight 700 titles + Inter text + JetBrains Mono code (all with Cyrillic ext for ң ө ү)
+   LAYOUT strip, nav row, tracer full width (code | state); below 760px stacks code, then state */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0a0d18);--ink:light-dark(#0b0d12,#e8ebf5);--mut:light-dark(#4a5268,#9aa3bd);--cob:light-dark(#1240e0,#7d97ff);--strip:light-dark(#1240e0,#0f2a9e);--pale:light-dark(#eef2ff,#121a33);--line:light-dark(#d5dbea,#26304d);--hl:light-dark(#fff1a8,#3d3510);--ok:light-dark(#0a7d44,#3ecf8e);--bad:light-dark(#c62828,#ff7b7b);--card:light-dark(#ffffff,#0f1426)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:64px;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;letter-spacing:-.02em;line-height:1.08;margin:0}
+h1{font-size:clamp(28px,4.4vw,46px);text-wrap:balance}
+h2{font-size:clamp(24px,3vw,34px);margin-bottom:6px}
+h3{font-size:19px}
+h4{margin:18px 0 6px;font-size:16px}
+p{margin:0 0 10px}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px}
+pre,.scroll{overflow-x:auto}
+a{color:var(--cob)}
+.wrap{max-width:1240px;margin:0 auto}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.strip{background:var(--strip);color:#fff;padding:18px max(5vw,16px) 22px}
+.strip .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;opacity:.95}
+.strip h1{margin:14px 0 8px;color:#fff}
+.strip .sub{max-width:62ch;opacity:.92;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:14px;font-size:14px}
+.stats b{font-size:20px;font-family:"Inter Tight",sans-serif;margin-right:4px}
+.lang{display:flex;border:1px solid rgba(255,255,255,.6);border-radius:8px;overflow:hidden}
+.lang button{background:none;border:0;color:#fff;font:600 14px Inter,sans-serif;padding:10px 14px;min-height:40px;cursor:pointer}
+.lang button[aria-pressed=true]{background:#fff;color:#1240e0}
+nav.nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.nav .scroll{display:flex;gap:4px;padding:0 max(5vw,16px);max-width:1240px;margin:0 auto}
+nav.nav a{flex:none;padding:12px 12px;text-decoration:none;color:var(--ink);font-weight:500;font-size:15px;border-bottom:3px solid transparent}
+nav.nav a:hover,nav.nav a:focus-visible{border-color:var(--cob);outline:none}
+.lead{color:var(--mut);max-width:70ch;margin-bottom:18px}
+button,.btn{font:600 15px Inter,sans-serif;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--cob)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--cob) 45%,transparent);outline-offset:2px}
+button.pri{background:var(--cob);border-color:var(--cob);color:light-dark(#fff,#0a0d18)}
+button:disabled{opacity:.45;cursor:default}
+input,textarea,select{font:16px Inter,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:44px}
+textarea{width:100%;font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.5;resize:vertical}
+label{font-weight:600;font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--pale);border-radius:12px 12px 0 0;font-weight:600;font-size:14px;flex-wrap:wrap}
+/* tracer */
+.progs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.progs button[aria-pressed=true]{background:var(--cob);color:light-dark(#fff,#0a0d18);border-color:var(--cob)}
+.tr{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+.code{margin:0;padding:8px 0;counter-reset:ln}
+.code div{display:flex;padding:2px 14px 2px 0;white-space:pre;transition:background .2s}
+.code div span.n{flex:none;width:40px;text-align:right;padding-right:14px;color:var(--mut);user-select:none}
+.code div.cur{background:var(--hl);box-shadow:inset 4px 0 var(--cob)}
+.note{padding:14px;font-size:17px;min-height:78px;border-bottom:1px solid var(--line)}
+.note .k{color:var(--mut);font-size:13px;display:block;margin-bottom:2px}
+.arr{display:flex;gap:4px;padding:14px 14px 6px;flex-wrap:wrap}
+.cell{width:46px;text-align:center}
+.cell .v{height:46px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;font:600 16px "JetBrains Mono",monospace;background:var(--pale)}
+.cell.on .v{background:var(--cob);color:light-dark(#fff,#0a0d18);border-color:var(--cob)}
+.cell .i{font-size:13px;color:var(--mut);font-family:"JetBrains Mono",monospace}
+.cell .t{font-size:13px;color:var(--cob);font-weight:600;min-height:20px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:7px 14px;border-bottom:1px solid var(--line)}
+th{font-size:13px;color:var(--mut);font-weight:600}
+td.chg{background:var(--hl)}
+.out{margin:0;padding:12px 14px;min-height:56px;background:light-dark(#0b0d12,#05070d);color:#d7f7c8;border-radius:0 0 12px 12px;white-space:pre-wrap}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ctl .cnt{margin-left:auto;font-size:14px;color:var(--mut);white-space:nowrap}
+.bar{height:4px;background:var(--line)}
+.bar i{display:block;height:100%;background:var(--cob);transition:width .2s}
+.inp{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.inp input{flex:1 1 160px;font-family:"JetBrains Mono",monospace}
+/* lectures */
+.lects{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:24px;align-items:start}
+.toc{display:flex;flex-direction:column;gap:2px;position:sticky;top:64px}
+.toc button{text-align:left;border:0;border-left:3px solid transparent;border-radius:0;background:none;font-weight:500;padding:8px 12px;min-height:40px;line-height:1.3}
+.toc button[aria-pressed=true]{border-color:var(--cob);background:var(--pale);color:var(--cob)}
+.lec{max-width:76ch}
+.lec .num{color:var(--cob);font-weight:600;font-size:14px}
+.lec ul{padding-left:20px;margin:0 0 10px}
+.lec li{margin-bottom:4px}
+.lec pre{background:var(--pale);border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0}
+.lec .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.shapes{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:12px 0}
+.shapes figure{margin:0;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;font-size:14px}
+.shapes svg{width:100%;height:64px}
+.shapes svg *{fill:var(--pale);stroke:var(--cob);stroke-width:2}
+@media(max-width:760px){.lects{grid-template-columns:minmax(0,1fr)}.toc{position:static;flex-direction:row;overflow-x:auto}.toc button{flex:none;border-left:0;border-bottom:3px solid transparent}.toc button[aria-pressed=true]{border-color:var(--cob)}}
+/* practice */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.pw{padding:16px;display:flex;flex-direction:column;gap:8px}
+.pw .hd{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.pw .no{font:700 14px "Inter Tight",sans-serif;color:var(--cob);white-space:nowrap}
+.pw ol{margin:0;padding-left:20px}
+.pw .goal{color:var(--mut);font-size:15px}
+.pw .ft{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.chk{display:flex;gap:8px;align-items:center;font-weight:500;cursor:pointer;min-height:44px}
+.chk input{width:22px;height:22px;min-height:0;accent-color:var(--cob)}
+.pw.done{border-color:var(--ok)}
+/* sort */
+.sv{height:300px;display:flex;align-items:flex-end;gap:4px;padding:14px 14px 0}
+.sv div{flex:1;background:var(--pale);border:1px solid var(--line);border-bottom:0;border-radius:4px 4px 0 0;position:relative;transition:height .15s}
+.sv div span{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:13px;font-family:"JetBrains Mono",monospace}
+.sv div.c{background:#ffd54a;border-color:#e0b100}
+.sv div.s{background:var(--bad);border-color:var(--bad)}
+.sv div.d{background:var(--cob);border-color:var(--cob)}
+.meters{display:flex;gap:22px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line);font-size:14px}
+.meters b{font:700 22px "Inter Tight",sans-serif;margin-right:4px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* sandbox */
+.sb{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+.sb textarea#sbCode{min-height:300px;border:0;border-radius:0;background:var(--card)}
+.sb textarea#sbIn{min-height:90px}
+.status{font-size:14px;color:var(--mut)}
+@media(max-width:760px){.tr,.sb{grid-template-columns:minmax(0,1fr)}}
+/* tests */
+.q{padding:16px;margin-bottom:12px}
+.q .qt{font-weight:600;margin-bottom:8px}
+.q label{display:flex;gap:10px;align-items:center;font-weight:400;font-size:16px;padding:8px 10px;border-radius:8px;cursor:pointer;min-height:44px}
+.q label:hover{background:var(--pale)}
+.q input{min-height:0;width:20px;height:20px;accent-color:var(--cob)}
+.q.ok{border-color:var(--ok)}
+.q.no{border-color:var(--bad)}
+.q label.right{background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q label.wrong{background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.q .ex{display:none;color:var(--mut);font-size:15px;margin-top:6px}
+.q.ok .ex,.q.no .ex{display:block}
+.score{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:12px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.score b{font:700 26px "Inter Tight",sans-serif}
+/* report */
+.rp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.rp .f{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.rp pre{margin:0;padding:14px;white-space:pre-wrap;min-height:420px;font-size:13px}
+@media(max-width:760px){.rp{grid-template-columns:minmax(0,1fr)}}
+.alt{background:var(--pale)}
+footer{background:var(--strip);color:#fff;padding:28px max(5vw,16px);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header class="strip">
+  <div class="wrap">
+    <div class="top">
+      <span data-t="college">Таш-Көмүр аймактык колледжи · ПОВ-1-25</span>
+      <div class="lang" role="group" aria-label="Тил / Язык">
+        <button id="lgKy" type="button">Кыргызча</button>
+        <button id="lgRu" type="button">Русский</button>
+      </div>
+    </div>
+    <h1 data-t="title">Алгоритмдөөнүн жана программалоонун негиздери</h1>
+    <p class="sub" data-t="sub">Электрондук окуу китеби: лекциялар жана интерактивдүү практикум</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+<nav class="nav"><div class="scroll">
+  <a href="#trace" data-t="nTrace">Трассировка</a>
+  <a href="#lectures" data-t="nLect">Лекциялар</a>
+  <a href="#practice" data-t="nPract">Практикалык иштер</a>
+  <a href="#sort" data-t="nSort">Сорттоо</a>
+  <a href="#python" data-t="nPy">Python терезеси</a>
+  <a href="#test" data-t="nTest">Тест</a>
+  <a href="#report" data-t="nRep">Отчёт</a>
+</div></nav>
+
+<section class="band" id="trace"><div class="wrap">
+  <h2 data-t="trH">Программа кантип аткарылат: кадам-кадам менен</h2>
+  <p class="lead" data-t="trL">Программаны тандаңыз, «Кийинки» баскычын басыңыз. Сары сап азыр аткарылып жаткан буйрукту, ал эми таблица өзгөрмөлөрдүн маанисин көрсөтөт.</p>
+  <div class="progs" id="progs"></div>
+  <div class="tr">
+    <div class="panel">
+      <div class="ph"><span data-t="prog">Программа</span><span class="mono">Python</span></div>
+      <div class="inp"><label for="trIn" id="trInL">n =</label><input id="trIn" autocomplete="off"><button type="button" id="trApply" data-t="apply">Колдонуу</button></div>
+      <pre class="code" id="code"></pre>
+    </div>
+    <div class="panel">
+      <div class="bar"><i id="trBar"></i></div>
+      <div class="ctl">
+        <button type="button" id="bReset" data-t="reset">Башынан</button>
+        <button type="button" id="bPrev" data-t="prev">Артка</button>
+        <button type="button" class="pri" id="bNext" data-t="next">Кийинки</button>
+        <button type="button" id="bPlay" data-t="play">Ойнотуу</button>
+        <span class="cnt" id="cnt"></span>
+      </div>
+      <div class="note" id="note"></div>
+      <div class="arr" id="arr" hidden></div>
+      <table><thead><tr><th data-t="var">Өзгөрмө</th><th data-t="val">Мааниси</th></tr></thead><tbody id="vars"></tbody></table>
+      <div class="ph" style="border-radius:0;border-top:1px solid var(--line)"><span data-t="screen">Экран (print)</span></div>
+      <pre class="out" id="out"></pre>
+    </div>
+  </div>
+</div></section>
+
+<section class="band alt" id="lectures"><div class="wrap">
+  <h2 data-t="lH">Лекциялардын конспекти</h2>
+  <p class="lead" data-t="lL">11 тема. Ар бир лекциядагы кодду Python терезесинде ачып, өзүңүз иштетип көрсөңүз болот.</p>
+  <div class="lects"><div class="toc" id="toc"></div><article class="lec" id="lec"></article></div>
+</div></section>
+
+<section class="band" id="practice"><div class="wrap">
+  <h2 data-t="pH">Практикалык иштер</h2>
+  <p class="lead" data-t="pL">Ар бир иш үч тапшырмадан турат. Аткарганда белгилеп коюңуз: прогресс ушул браузерде сакталат. Кодду «Python терезесинде ачуу» баскычы менен баштаңыз.</p>
+  <div class="pgrid" id="pgrid"></div>
+</div></section>
+
+<section class="band alt" id="sort"><div class="wrap">
+  <h2 data-t="sH">Сорттоо алгоритмдерин салыштыруу</h2>
+  <p class="lead" data-t="sL">Бир эле тизмени үч алгоритм менен сорттоп, салыштыруулардын жана орун алмаштыруулардын санын салыштырыңыз.</p>
+  <div class="panel">
+    <div class="ctl">
+      <select id="sAlg" aria-label="Алгоритм"></select>
+      <button type="button" id="sShuf" data-t="shuffle">Аралаштыруу</button>
+      <button type="button" id="sStep" data-t="step">Кадам</button>
+      <button type="button" class="pri" id="sPlay" data-t="play">Ойнотуу</button>
+      <label class="row" style="font-weight:500"><span data-t="speed">Ылдамдык</span><input type="range" id="sSpd" min="1" max="10" value="6" style="min-height:0;padding:0;width:120px;accent-color:var(--cob)"></label>
+    </div>
+    <div class="sv" id="sv"></div>
+    <div class="meters">
+      <span><b id="mC">0</b><span data-t="cmp">салыштыруу</span></span>
+      <span><b id="mS">0</b><span data-t="swp">орун алмаштыруу</span></span>
+      <span class="legend"><span><i style="background:#ffd54a"></i><span data-t="lgC">салыштырылууда</span></span><span><i style="background:var(--bad)"></i><span data-t="lgS">алмашты</span></span><span><i style="background:var(--cob)"></i><span data-t="lgD">ордунда</span></span></span>
+    </div>
+    <p id="sInfo" style="padding:0 14px 14px;margin:0;color:var(--mut)"></p>
+  </div>
+</div></section>
+
+<section class="band" id="python"><div class="wrap">
+  <h2 data-t="yH">Python терезеси</h2>
+  <p class="lead" data-t="yL">Кодду ушул жерде эле иштетиңиз: Python браузердин ичинде иштейт. Биринчи жолу жүктөө 10–20 секунд алат. input() үчүн маалыматтарды оң жактагы талаага ар бирин жаңы сапка жазыңыз.</p>
+  <div class="sb">
+    <div class="panel">
+      <div class="ph"><select id="sbEx" aria-label="Мисал" style="min-height:36px;padding:4px 8px;font-size:14px"></select><span class="mono" style="font-weight:400">Ctrl+Enter</span></div>
+      <textarea id="sbCode" spellcheck="false" aria-label="Python code"></textarea>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="f"><label for="sbIn" data-t="stdin">Киргизилүүчү маалымат (input)</label><textarea id="sbIn" spellcheck="false"></textarea></div>
+      <div class="row"><button type="button" class="pri" id="sbRun" data-t="run">Иштетүү</button><button type="button" id="sbClr" data-t="clear">Тазалоо</button><span class="status" id="sbSt"></span></div>
+      <div class="panel"><div class="ph"><span data-t="screen">Экран (print)</span></div><pre class="out" id="sbOut" style="min-height:180px"></pre></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band alt" id="test"><div class="wrap">
+  <h2 data-t="tH">Өзүн-өзү текшерүү тести</h2>
+  <p class="lead" data-t="tL">15 суроо бардык темалар боюнча. Жоопторду тандап, «Текшерүү» баскычын басыңыз: туура жооп жана түшүндүрмө көрсөтүлөт.</p>
+  <div id="qs" style="max-width:820px"></div>
+  <div class="score" style="max-width:820px;background:var(--pale)"><button type="button" class="pri" id="tChk" data-t="check">Текшерүү</button><button type="button" id="tRst" data-t="again">Кайра баштоо</button><span id="tRes"></span></div>
+</div></section>
+
+<section class="band" id="report"><div class="wrap">
+  <h2 data-t="rH">Практикалык иш боюнча отчёт</h2>
+  <p class="lead" data-t="rL">Талааларды толтуруңуз: оң жакта даяр отчёт түзүлөт. «Көчүрүү» баскычын басып, мугалимге жөнөтүңүз.</p>
+  <div class="rp">
+    <form id="rf" autocomplete="on">
+      <div class="f"><label for="rName" data-t="fio">Студенттин аты-жөнү</label><input id="rName"></div>
+      <div class="row" style="gap:12px">
+        <div class="f" style="flex:1 1 140px"><label for="rGroup" data-t="group">Тайпа</label><input id="rGroup" value="ПОВ-1-25"></div>
+        <div class="f" style="flex:2 1 220px"><label for="rNo" data-t="pwork">Практикалык иш</label><select id="rNo"></select></div>
+      </div>
+      <div class="f"><label for="rCode" data-t="rcode">Программанын коду</label><textarea id="rCode" rows="7" spellcheck="false"></textarea></div>
+      <div class="f"><label for="rOut" data-t="rout">Иштетүүнүн натыйжасы</label><textarea id="rOut" rows="3" spellcheck="false"></textarea></div>
+      <div class="f"><label for="rConc" data-t="rconc">Корутунду</label><textarea id="rConc" rows="3" style="font-family:Inter,sans-serif;font-size:16px"></textarea></div>
+    </form>
+    <div class="panel"><div class="ph"><span data-t="preview">Отчёт</span><button type="button" id="rCopy" class="pri" style="min-height:36px" data-t="copy">Көчүрүү</button></div><pre id="rPre"></pre></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span data-t="foot1">© 2026 Бактыбек уулу Байэл, компьютердик технологиялар боюнча окутуучу</span>
+  <span data-t="foot2">Таш-Көмүр аймактык колледжи · «Алгоритмдөөнүн жана программалоонун негиздери»</span>
+</div></footer>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem('aop_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('aop_'+k,JSON.stringify(v))}catch(e){}}};
+let L=store.get('lang','ky');
+const tx=o=>o==null?'':typeof o==='string'?o:o[L];
+
+const T={
+ky:{college:'Таш-Көмүр аймактык колледжи · ПОВ-1-25',title:'Алгоритмдөөнүн жана программалоонун негиздери',sub:'Электрондук окуу китеби: лекциялардын конспекти жана интерактивдүү практикум. Мисалдар Python тилинде.',nTrace:'Трассировка',nLect:'Лекциялар',nPract:'Практикалык иштер',nSort:'Сорттоо',nPy:'Python терезеси',nTest:'Тест',nRep:'Отчёт',trH:'Программа кантип аткарылат: кадам-кадам менен',trL:'Программаны тандап, «Кийинки» баскычын басыңыз. Сары сап азыр аткарылып жаткан буйрукту, таблица өзгөрмөлөрдүн маанисин көрсөтөт. Киргизилүүчү маалыматты өзгөртүп көрүңүз.',prog:'Программа',apply:'Колдонуу',reset:'Башынан',prev:'Артка',next:'Кийинки',play:'Ойнотуу',pause:'Токтотуу',var:'Өзгөрмө',val:'Мааниси',screen:'Экран (print)',step:'Кадам',lH:'Лекциялардын конспекти',lL:'11 тема. Ар бир лекциядагы кодду Python терезесинде ачып, өзүңүз иштетип көрө аласыз.',lect:'Лекция',openPy:'Python терезесинде ачуу',openTr:'Трассировкада көрүү',pH:'Практикалык иштер',pL:'Ар бир иш үч тапшырмадан турат. Аткарганда белгилеп коюңуз: прогресс ушул браузерде сакталат.',pw:'ПИ',goal:'Максаты',done:'Аткарылды',sH:'Сорттоо алгоритмдерин салыштыруу',sL:'Бир эле тизмени үч алгоритм менен сорттоп, салыштыруулардын жана орун алмаштыруулардын санын салыштырыңыз.',shuffle:'Аралаштыруу',speed:'Ылдамдык',cmp:'салыштыруу',swp:'орун алмаштыруу',lgC:'салыштырылууда',lgS:'алмашты',lgD:'ордунда',yH:'Python терезеси',yL:'Кодду ушул жерде эле иштетиңиз: Python браузердин ичинде иштейт. Биринчи жүктөө 10–20 секунд алат. input() үчүн маалыматтарды оң жактагы талаага ар бирин өзүнчө сапка жазыңыз.',stdin:'Киргизилүүчү маалымат (input)',run:'Иштетүү',clear:'Тазалоо',loading:'Python жүктөлүүдө…',ready:'Даяр',running:'Иштеп жатат…',loadErr:'Python жүктөлгөн жок. Интернетти текшерип, кайра басыңыз.',tH:'Өзүн-өзү текшерүү тести',tL:'15 суроо бардык темалар боюнча. Жоопторду тандап, «Текшерүү» баскычын басыңыз: туура жооп жана түшүндүрмө көрсөтүлөт.',check:'Текшерүү',again:'Кайра баштоо',res:'Натыйжа',best:'мурунку эң жакшы',rH:'Практикалык иш боюнча отчёт',rL:'Талааларды толтуруңуз, оң жакта даяр отчёт түзүлөт. «Көчүрүү» баскычын басып, мугалимге жөнөтүңүз (Telegram, Classroom ж.б.).',fio:'Студенттин аты-жөнү',group:'Тайпа',pwork:'Практикалык иш',rcode:'Программанын коду',rout:'Иштетүүнүн натыйжасы',rconc:'Корутунду',preview:'Отчёт',copy:'Көчүрүү',copied:'Көчүрүлдү',foot1:'© 2026 Бактыбек уулу Байэл, компьютердик технологиялар боюнча окутуучу',foot2:'Таш-Көмүр аймактык колледжи · «Алгоритмдөөнүн жана программалоонун негиздери»',stL:'лекция',stP:'практикалык иш',stT:'тест суроосу',stD:'аткарылды',repT:'ПРАКТИКАЛЫК ИШ БОЮНЧА ОТЧЁТ',repDisc:'Сабак',repSt:'Студент',repGr:'Тайпа',repDate:'Күнү',repTopic:'Тема',repGoal:'Максаты',repTasks:'Тапшырмалар',repCode:'Программанын коду',repOut:'Натыйжа',repConc:'Корутунду',repT2:'Текшерген',teacher:'Бактыбек уулу Байэл'},
+ru:{college:'Таш-Кумырский региональный колледж · ПОВ-1-25',title:'Основы алгоритмизации и программирования',sub:'Электронный учебник: конспект лекций и интерактивный практикум. Примеры на языке Python.',nTrace:'Трассировка',nLect:'Лекции',nPract:'Практические работы',nSort:'Сортировка',nPy:'Python-песочница',nTest:'Тест',nRep:'Отчёт',trH:'Как выполняется программа: шаг за шагом',trL:'Выберите программу и нажимайте «Далее». Жёлтая строка — команда, которая выполняется сейчас, таблица показывает значения переменных. Попробуйте изменить входные данные.',prog:'Программа',apply:'Применить',reset:'Сначала',prev:'Назад',next:'Далее',play:'Запуск',pause:'Пауза',var:'Переменная',val:'Значение',screen:'Вывод (print)',step:'Шаг',lH:'Конспект лекций',lL:'11 тем. Код из каждой лекции можно открыть в песочнице и запустить самостоятельно.',lect:'Лекция',openPy:'Открыть в песочнице',openTr:'Посмотреть в трассировке',pH:'Практические работы',pL:'Каждая работа состоит из трёх заданий. Отмечайте выполненные: прогресс сохраняется в этом браузере.',pw:'ПР',goal:'Цель',done:'Выполнено',sH:'Сравнение алгоритмов сортировки',sL:'Отсортируйте один и тот же список тремя алгоритмами и сравните число сравнений и перестановок.',shuffle:'Перемешать',speed:'Скорость',cmp:'сравнений',swp:'перестановок',lgC:'сравниваются',lgS:'переставлены',lgD:'на месте',yH:'Python-песочница',yL:'Запускайте код прямо здесь: Python работает внутри браузера. Первая загрузка занимает 10–20 секунд. Данные для input() пишите в поле справа, каждое значение с новой строки.',stdin:'Входные данные (input)',run:'Запустить',clear:'Очистить',loading:'Загрузка Python…',ready:'Готово',running:'Выполняется…',loadErr:'Python не загрузился. Проверьте интернет и нажмите ещё раз.',tH:'Тест для самопроверки',tL:'15 вопросов по всем темам. Выберите ответы и нажмите «Проверить»: появятся правильные ответы и пояснения.',check:'Проверить',again:'Начать заново',res:'Результат',best:'лучший результат',rH:'Отчёт по практической работе',rL:'Заполните поля, справа сформируется готовый отчёт. Нажмите «Копировать» и отправьте преподавателю (Telegram, Classroom и т. п.).',fio:'ФИО студента',group:'Группа',pwork:'Практическая работа',rcode:'Код программы',rout:'Результат выполнения',rconc:'Вывод',preview:'Отчёт',copy:'Копировать',copied:'Скопировано',foot1:'© 2026 Бактыбек уулу Байэл, преподаватель компьютерных технологий',foot2:'Таш-Кумырский региональный колледж · «Основы алгоритмизации и программирования»',stL:'лекций',stP:'практических работ',stT:'вопросов теста',stD:'выполнено',repT:'ОТЧЁТ ПО ПРАКТИЧЕСКОЙ РАБОТЕ',repDisc:'Дисциплина',repSt:'Студент',repGr:'Группа',repDate:'Дата',repTopic:'Тема',repGoal:'Цель',repTasks:'Задания',repCode:'Код программы',repOut:'Результат',repConc:'Вывод',repT2:'Проверил',teacher:'Бактыбек уулу Байэл'}
+};
+const t=k=>T[L][k]??k;
+
+/* ---------- LECTURES ---------- */
+const SH=`<div class="shapes">
+<figure><svg viewBox="0 0 140 64"><rect x="10" y="14" width="120" height="36" rx="18"/></svg><figcaption>{a}</figcaption></figure>
+<figure><svg viewBox="0 0 140 64"><polygon points="28,14 130,14 112,50 10,50"/></svg><figcaption>{b}</figcaption></figure>
+<figure><svg viewBox="0 0 140 64"><rect x="12" y="12" width="116" height="40"/></svg><figcaption>{c}</figcaption></figure>
+<figure><svg viewBox="0 0 140 64"><polygon points="70,4 130,32 70,60 10,32"/></svg><figcaption>{d}</figcaption></figure>
+<figure><svg viewBox="0 0 140 64"><polygon points="30,12 110,12 128,32 110,52 30,52 12,32"/></svg><figcaption>{e}</figcaption></figure>
+<figure><svg viewBox="0 0 140 64"><rect x="12" y="12" width="116" height="40"/><line x1="26" y1="12" x2="26" y2="52"/><line x1="114" y1="12" x2="114" y2="52"/></svg><figcaption>{f}</figcaption></figure></div>`;
+const shapes=(a)=>SH.replace('{a}',a[0]).replace('{b}',a[1]).replace('{c}',a[2]).replace('{d}',a[3]).replace('{e}',a[4]).replace('{f}',a[5]);
+
+const LECT=[
+{t:{ky:'Алгоритм жана анын касиеттери',ru:'Алгоритм и его свойства'},
+b:{ky:`<p><b>Алгоритм</b> — маселени чечүү үчүн аткаруучуга берилген так жана иреттүү буйруктардын тизмеги. Аткаруучу адам, робот же компьютер болушу мүмкүн. Компьютер буйрукту «түшүнбөйт», аны жөн гана так аткарат, ошондуктан алгоритмде эки ойлуулук болбошу керек.</p>
+<h4>Алгоритмдин касиеттери</h4><ul><li><b>Дискреттүүлүк</b> — алгоритм өз-өзүнчө кадамдарга бөлүнөт.</li><li><b>Аныктык</b> — ар бир кадам бир гана маанини туюндурат, аткаруучу эмне кылаарын так билет.</li><li><b>Түшүнүктүүлүк</b> — колдонулган буйруктар аткаруучуга белгилүү.</li><li><b>Натыйжалуулук</b> — чектүү сандагы кадамдан кийин натыйжа алынат.</li><li><b>Массалуулук</b> — бир түрдөгү маселелердин баарына (ар кандай баштапкы маалыматтар үчүн) колдонулат.</li></ul>
+<h4>Алгоритмди жазуу ыкмалары</h4><p>Сөз менен (табигый тилде), графикалык түрдө (блок-схема), псевдокод менен жана программалоо тилинде. Төмөндө эки сандын чоңун табуунун псевдокоду:</p>`,
+ru:`<p><b>Алгоритм</b> — точная и упорядоченная последовательность команд исполнителю для решения задачи. Исполнителем может быть человек, робот или компьютер. Компьютер команды не «понимает», а просто точно выполняет, поэтому в алгоритме не должно быть двусмысленности.</p>
+<h4>Свойства алгоритма</h4><ul><li><b>Дискретность</b> — алгоритм разбит на отдельные шаги.</li><li><b>Определённость</b> — каждый шаг однозначен, исполнитель точно знает, что делать.</li><li><b>Понятность</b> — используются только команды, известные исполнителю.</li><li><b>Результативность</b> — за конечное число шагов получается результат.</li><li><b>Массовость</b> — алгоритм применим ко всем задачам данного типа (при разных исходных данных).</li></ul>
+<h4>Способы записи алгоритма</h4><p>Словесный (на естественном языке), графический (блок-схема), псевдокод и запись на языке программирования. Ниже — псевдокод поиска большего из двух чисел:</p>`},
+c:{ky:`башы
+  a, b сандарын киргиз
+  эгер a > b болсо
+      max := a
+  болбосо
+      max := b
+  max ты чыгар
+аягы`,ru:`начало
+  ввести a, b
+  если a > b то
+      max := a
+  иначе
+      max := b
+  вывести max
+конец`},py:false},
+{t:{ky:'Блок-схемалар',ru:'Блок-схемы'},
+b:{ky:`<p><b>Блок-схема</b> — алгоритмдин графикалык сүрөттөлүшү. Ар бир аракет белгилүү фигура менен көрсөтүлүп, фигуралар аткарылуу тартибин көрсөткөн сызыктар (жебелер) менен туташтырылат. Белгилер ГОСТ 19.701-90 стандартында бекитилген.</p>${shapes(['Башы / аягы','Киргизүү / чыгаруу','Аракет (процесс)','Шарт (чечим)','Цикл (параметр менен)','Подпрограмма (функция)'])}
+<h4>Алгоритмдердин негизги түзүлүштөрү</h4><ul><li><b>Сызыктуу</b> — буйруктар бирин-бири удаалаш, бир жолу аткарылат.</li><li><b>Тармакталган</b> — шартка жараша эки (же андан көп) жолдун бири тандалат.</li><li><b>Циклдик</b> — буйруктардын тобу шарт аткарылып турганда кайталанат.</li></ul><p>Каалаган алгоритмди ушул үч түзүлүштүн айкалышы менен жазууга болот. Блок-схеманы жогорудан төмөн, солдон оңго карай чийебиз; ромбдон эки чыгуу болот: «ооба» жана «жок».</p>`,
+ru:`<p><b>Блок-схема</b> — графическое представление алгоритма. Каждое действие изображается определённой фигурой, а фигуры соединяются линиями (стрелками), показывающими порядок выполнения. Обозначения установлены стандартом ГОСТ 19.701-90.</p>${shapes(['Начало / конец','Ввод / вывод','Действие (процесс)','Условие (решение)','Цикл с параметром','Подпрограмма (функция)'])}
+<h4>Базовые структуры алгоритмов</h4><ul><li><b>Линейная</b> — команды выполняются одна за другой, по одному разу.</li><li><b>Ветвление</b> — в зависимости от условия выбирается один из двух (или более) путей.</li><li><b>Цикл</b> — группа команд повторяется, пока выполняется условие.</li></ul><p>Любой алгоритм можно записать сочетанием этих трёх структур. Блок-схему рисуют сверху вниз и слева направо; у ромба два выхода: «да» и «нет».</p>`},c:null},
+{t:{ky:'Python: өзгөрмөлөр, типтер, киргизүү жана чыгаруу',ru:'Python: переменные, типы, ввод и вывод'},
+b:{ky:`<p><b>Python</b> — синтаксиси жөнөкөй, кеңири колдонулган программалоо тили. Программа саптар боюнча жогорудан төмөн карай аткарылат.</p>
+<p><b>Өзгөрмө</b> — маанини сактоочу, аталышы бар эс тутум уячасы. <code>x = 5</code> жазуусу — ыйгаруу: оң жактагы маани сол жактагы өзгөрмөгө жазылат. Аталыш тамгадан же <code>_</code> белгисинен башталат; чоң жана кичине тамгалар айырмаланат (<code>Age</code> жана <code>age</code> — ар башка өзгөрмөлөр).</p>
+<h4>Негизги маалымат типтери</h4><ul><li><code>int</code> — бүтүн сан: 7, -12</li><li><code>float</code> — бөлчөк сан: 3.14 (үтүр эмес, чекит)</li><li><code>str</code> — сап (текст): "Салам"</li><li><code>bool</code> — логикалык маани: True же False</li></ul>
+<p>Типти <code>type(x)</code> менен билебиз. <code>input()</code> дайыма <b>сап</b> кайтарат, ошондуктан сан керек болсо <code>int()</code> же <code>float()</code> менен айландырабыз. <code>print()</code> бир нече маанини боштук менен бөлүп чыгарат.</p>`,
+ru:`<p><b>Python</b> — популярный язык программирования с простым синтаксисом. Программа выполняется построчно сверху вниз.</p>
+<p><b>Переменная</b> — именованная ячейка памяти для хранения значения. Запись <code>x = 5</code> — присваивание: значение справа записывается в переменную слева. Имя начинается с буквы или знака <code>_</code>; регистр важен (<code>Age</code> и <code>age</code> — разные переменные).</p>
+<h4>Основные типы данных</h4><ul><li><code>int</code> — целое число: 7, -12</li><li><code>float</code> — вещественное число: 3.14 (точка, а не запятая)</li><li><code>str</code> — строка (текст): "Привет"</li><li><code>bool</code> — логическое значение: True или False</li></ul>
+<p>Тип узнаём через <code>type(x)</code>. <code>input()</code> всегда возвращает <b>строку</b>, поэтому для чисел используем <code>int()</code> или <code>float()</code>. <code>print()</code> выводит несколько значений через пробел.</p>`},
+c:{ky:`name = input("Атыңыз: ")
+age = int(input("Жашыңыз: "))
+print("Салам,", name)
+print("Кийинки жылы", age + 1, "жашка чыгасыз")
+print(type(age), type(name))`,ru:`name = input("Ваше имя: ")
+age = int(input("Ваш возраст: "))
+print("Привет,", name)
+print("В следующем году вам будет", age + 1)
+print(type(age), type(name))`},inp:'Айбек\n17'},
+{t:{ky:'Арифметикалык жана логикалык амалдар',ru:'Арифметические и логические операции'},
+b:{ky:`<h4>Арифметикалык амалдар</h4><ul><li><code>+ - *</code> — кошуу, кемитүү, көбөйтүү</li><li><code>/</code> — бөлүү, натыйжасы дайыма float: <code>7 / 2 = 3.5</code></li><li><code>//</code> — бүтүн бөлүү: <code>7 // 2 = 3</code></li><li><code>%</code> — бөлүүдөн калган калдык: <code>7 % 2 = 1</code></li><li><code>**</code> — даражага көтөрүү: <code>2 ** 10 = 1024</code></li></ul>
+<h4>Салыштыруу жана логика</h4><p>Салыштыруу <code>== != &lt; &gt; &lt;= &gt;=</code> натыйжасында <code>True</code> же <code>False</code> берет. Логикалык амалдар: <code>and</code> (экөө тең туура), <code>or</code> (жок дегенде бирөө туура), <code>not</code> (тескерисинче).</p>
+<p><b>Аткарылуу тартиби:</b> <code>**</code> → <code>* / // %</code> → <code>+ -</code> → салыштыруу → <code>not</code> → <code>and</code> → <code>or</code>. Кашаа тартипти өзгөртөт. Жуп санды текшерүү: <code>n % 2 == 0</code>.</p>`,
+ru:`<h4>Арифметические операции</h4><ul><li><code>+ - *</code> — сложение, вычитание, умножение</li><li><code>/</code> — деление, результат всегда float: <code>7 / 2 = 3.5</code></li><li><code>//</code> — целочисленное деление: <code>7 // 2 = 3</code></li><li><code>%</code> — остаток от деления: <code>7 % 2 = 1</code></li><li><code>**</code> — возведение в степень: <code>2 ** 10 = 1024</code></li></ul>
+<h4>Сравнения и логика</h4><p>Сравнения <code>== != &lt; &gt; &lt;= &gt;=</code> дают <code>True</code> или <code>False</code>. Логические операции: <code>and</code> (оба истинны), <code>or</code> (хотя бы одно истинно), <code>not</code> (отрицание).</p>
+<p><b>Приоритет:</b> <code>**</code> → <code>* / // %</code> → <code>+ -</code> → сравнения → <code>not</code> → <code>and</code> → <code>or</code>. Скобки меняют порядок. Проверка чётности: <code>n % 2 == 0</code>.</p>`},
+c:`a, b = 17, 5
+print(a / b)     # 3.4
+print(a // b)    # 3
+print(a % b)     # 2
+print(a ** 2)    # 289
+print(a > b and b > 0)   # True
+print(not (a % 2 == 0))  # True`},
+{t:{ky:'Тармактоо: if, elif, else',ru:'Ветвление: if, elif, else'},
+b:{ky:`<p>Шарттуу оператор программага шартка жараша ар башка жол менен жүрүүгө мүмкүндүк берет. Шарттан кийин кош чекит <code>:</code> коюлат, ал эми блоктун ичиндеги буйруктар <b>4 боштук</b> жылыш менен жазылат: Python блоктун чегин ушул жылыш боюнча аныктайт.</p>
+<ul><li><code>if</code> — эгерде шарт туура болсо;</li><li><code>elif</code> — «болбосо, эгерде…», бир нече болушу мүмкүн;</li><li><code>else</code> — калган бардык учурлар.</li></ul>
+<p>Шарттар жогорудан төмөн карай текшерилет жана <b>биринчи</b> туура келген блок гана аткарылат. Ошондуктан мисалдагы шарттардын тартиби маанилүү: эгер <code>ball &gt;= 55</code> биринчи турса, 90 упай да «3» болуп калмак.</p>`,
+ru:`<p>Условный оператор позволяет программе идти разными путями в зависимости от условия. После условия ставится двоеточие <code>:</code>, а команды внутри блока пишутся с отступом <b>4 пробела</b>: по отступу Python определяет границы блока.</p>
+<ul><li><code>if</code> — если условие истинно;</li><li><code>elif</code> — «иначе, если…», их может быть несколько;</li><li><code>else</code> — все остальные случаи.</li></ul>
+<p>Условия проверяются сверху вниз, выполняется только <b>первый</b> подходящий блок. Поэтому порядок условий важен: если бы первым стояло <code>ball &gt;= 55</code>, то и 90 баллов дали бы «3».</p>`},
+c:{ky:`ball = int(input("Упай: "))
+if ball >= 85:
+    print("5 — эң жакшы")
+elif ball >= 70:
+    print("4 — жакшы")
+elif ball >= 55:
+    print("3 — канааттандырарлык")
+else:
+    print("2 — канааттандырарлык эмес")`,ru:`ball = int(input("Баллы: "))
+if ball >= 85:
+    print("5 — отлично")
+elif ball >= 70:
+    print("4 — хорошо")
+elif ball >= 55:
+    print("3 — удовлетворительно")
+else:
+    print("2 — неудовлетворительно")`},inp:'78'},
+{t:{ky:'while цикли',ru:'Цикл while'},
+b:{ky:`<p><code>while</code> цикли шарт <code>True</code> болуп турганда денесин кайталайт. Шарт ар бир кайталоонун алдында текшерилет; эгер башында эле <code>False</code> болсо, дене бир да жолу аткарылбайт.</p>
+<p>Цикл денесинде шартка таасир эткен өзгөрмө сөзсүз өзгөрүшү керек, антпесе цикл <b>чексиз</b> болуп калат. Кайталоолордун саны алдын ала белгисиз болгондо while ыңгайлуу: мисалы, сандын цифраларын санаганда же колдонуучу 0 киргизгенче окуганда.</p>
+<ul><li><code>break</code> — циклден дароо чыгуу;</li><li><code>continue</code> — калган буйруктарды өткөрүп, кийинки кайталоого өтүү.</li></ul>`,
+ru:`<p>Цикл <code>while</code> повторяет тело, пока условие равно <code>True</code>. Условие проверяется перед каждым повторением; если оно сразу <code>False</code>, тело не выполнится ни разу.</p>
+<p>В теле цикла обязательно должна меняться переменная из условия, иначе цикл станет <b>бесконечным</b>. while удобен, когда число повторений заранее неизвестно: например, при подсчёте цифр числа или чтении данных, пока пользователь не введёт 0.</p>
+<ul><li><code>break</code> — немедленный выход из цикла;</li><li><code>continue</code> — пропустить оставшиеся команды и перейти к следующему повторению.</li></ul>`},
+c:{ky:`n = int(input("Сан: "))
+s = 0
+while n > 0:
+    s += n % 10    # акыркы цифра
+    n //= 10       # акыркы цифраны алып салуу
+print("Цифралардын суммасы:", s)`,ru:`n = int(input("Число: "))
+s = 0
+while n > 0:
+    s += n % 10    # последняя цифра
+    n //= 10       # отбрасываем последнюю цифру
+print("Сумма цифр:", s)`},inp:'2026',tr:0},
+{t:{ky:'for цикли жана range()',ru:'Цикл for и range()'},
+b:{ky:`<p><code>for</code> цикли ырааттуулуктун (range, тизме, сап) ар бир элементи үчүн бир жолу аткарылат. Кайталоолордун саны алдын ала белгилүү болгондо for ыңгайлуу.</p>
+<ul><li><code>range(5)</code> → 0, 1, 2, 3, 4 (акыркы сан кирбейт)</li><li><code>range(2, 6)</code> → 2, 3, 4, 5</li><li><code>range(1, 10, 3)</code> → 1, 4, 7 (кадам 3)</li><li><code>range(10, 0, -2)</code> → 10, 8, 6, 4, 2 (терс кадам)</li></ul>
+<p>Цикл ичинде дагы бир цикл болушу мүмкүн (<b>кыналган циклдер</b>): ички цикл тышкы циклдин ар бир кадамында толук аткарылат. Мисалы, көбөйтүү таблицасынын бардык саптарын чыгаруу үчүн.</p>`,
+ru:`<p>Цикл <code>for</code> выполняется по одному разу для каждого элемента последовательности (range, список, строка). Удобен, когда число повторений известно заранее.</p>
+<ul><li><code>range(5)</code> → 0, 1, 2, 3, 4 (последнее число не входит)</li><li><code>range(2, 6)</code> → 2, 3, 4, 5</li><li><code>range(1, 10, 3)</code> → 1, 4, 7 (шаг 3)</li><li><code>range(10, 0, -2)</code> → 10, 8, 6, 4, 2 (отрицательный шаг)</li></ul>
+<p>Внутри цикла может быть другой цикл (<b>вложенные циклы</b>): внутренний цикл полностью выполняется на каждом шаге внешнего. Например, чтобы вывести всю таблицу умножения.</p>`},
+c:`n = 7
+for i in range(1, 11):
+    print(n, "x", i, "=", n * i)`,tr:1},
+{t:{ky:'Тизмелер (массивдер)',ru:'Списки (массивы)'},
+b:{ky:`<p><b>Тизме</b> — бир нече маанини бир өзгөрмөдө иреттүү сактоо. Элементтер квадрат кашаада үтүр менен жазылат: <code>a = [5, 3, 8]</code>. Индекстер <b>0дөн</b> башталат: <code>a[0]</code> — биринчи, <code>a[-1]</code> — акыркы элемент.</p>
+<ul><li><code>len(a)</code> — элементтердин саны</li><li><code>a.append(x)</code> — аягына кошуу; <code>a.insert(i, x)</code> — i ордуна кыстаруу</li><li><code>a.pop()</code> — акыркыны алып салуу; <code>a.remove(x)</code> — x маанисин өчүрүү</li><li><code>sum(a)</code>, <code>min(a)</code>, <code>max(a)</code>, <code>a.sort()</code></li></ul>
+<p>Тизме өзгөрүүчү: <code>a[1] = 10</code> элементти алмаштырат. Тизмени айлануунун эки жолу бар: <code>for x in a</code> (маанилер боюнча) жана <code>for i in range(len(a))</code> (индекстер боюнча, элементти өзгөртүү керек болгондо).</p>`,
+ru:`<p><b>Список</b> — упорядоченное хранение нескольких значений в одной переменной. Элементы пишутся в квадратных скобках через запятую: <code>a = [5, 3, 8]</code>. Индексы начинаются <b>с 0</b>: <code>a[0]</code> — первый, <code>a[-1]</code> — последний элемент.</p>
+<ul><li><code>len(a)</code> — количество элементов</li><li><code>a.append(x)</code> — добавить в конец; <code>a.insert(i, x)</code> — вставить на место i</li><li><code>a.pop()</code> — удалить последний; <code>a.remove(x)</code> — удалить значение x</li><li><code>sum(a)</code>, <code>min(a)</code>, <code>max(a)</code>, <code>a.sort()</code></li></ul>
+<p>Список изменяемый: <code>a[1] = 10</code> заменяет элемент. Обходить список можно двумя способами: <code>for x in a</code> (по значениям) и <code>for i in range(len(a))</code> (по индексам, когда элемент нужно изменить).</p>`},
+c:`a = [5, 3, 8, 1]
+a.append(10)
+print(a[0], a[-1])         # 5 10
+print(len(a), sum(a), max(a))
+for i in range(len(a)):
+    a[i] = a[i] * 2
+print(a)`,tr:2},
+{t:{ky:'Саптар (строки)',ru:'Строки'},
+b:{ky:`<p><b>Сап</b> — символдордун ырааттуулугу, тырмакчага алынат: <code>"..."</code> же <code>'...'</code>. Ар бир символдун индекси бар, тизмедегидей.</p>
+<ul><li><code>s[0]</code> — биринчи символ, <code>s[-1]</code> — акыркы</li><li><code>s[a:b]</code> — кесим: a индексинен b чейин (b кирбейт); <code>s[::-1]</code> — тескери сап</li><li><code>s.upper()</code>, <code>s.lower()</code> — чоң/кичине тамгага айландыруу</li><li><code>s.replace("а", "о")</code>, <code>s.count("а")</code>, <code>s.find("көм")</code></li><li><code>s.split()</code> — сөздөргө бөлүп, тизме кайтарат; <code>" ".join(list)</code> — тескерисинче</li></ul>
+<p>Саптар <b>өзгөрбөйт</b>: <code>s[0] = "А"</code> ката берет. Методдор жаңы сап кайтарат, аны өзгөрмөгө ыйгаруу керек: <code>s = s.upper()</code>.</p>`,
+ru:`<p><b>Строка</b> — последовательность символов в кавычках: <code>"..."</code> или <code>'...'</code>. У каждого символа есть индекс, как в списке.</p>
+<ul><li><code>s[0]</code> — первый символ, <code>s[-1]</code> — последний</li><li><code>s[a:b]</code> — срез: с индекса a до b (b не входит); <code>s[::-1]</code> — строка задом наперёд</li><li><code>s.upper()</code>, <code>s.lower()</code> — верхний/нижний регистр</li><li><code>s.replace("а", "о")</code>, <code>s.count("а")</code>, <code>s.find("кум")</code></li><li><code>s.split()</code> — разбить на слова, вернёт список; <code>" ".join(list)</code> — обратная операция</li></ul>
+<p>Строки <b>неизменяемы</b>: <code>s[0] = "А"</code> вызовет ошибку. Методы возвращают новую строку, её нужно присвоить: <code>s = s.upper()</code>.</p>`},
+c:`s = "Таш-Көмүр"
+print(len(s))
+print(s.upper())
+print(s[0:3])        # Таш
+print(s[::-1])
+words = "алгоритм жана программа".split()
+print(words, len(words))`},
+{t:{ky:'Функциялар',ru:'Функции'},
+b:{ky:`<p><b>Функция</b> — аталышы бар, кайра-кайра колдонула турган код блогу. Ал <code>def</code> менен жарыяланат, параметрлерди кабыл алат жана <code>return</code> менен натыйжа кайтарат. <code>return</code> аткарылганда функция ошол замат токтойт.</p>
+<p>Функциянын ичинде түзүлгөн өзгөрмөлөр <b>жергиликтүү</b>: алар функциядан сыртта көрүнбөйт. Параметрге демейки маани берүүгө болот: <code>def salam(at="дос")</code>.</p>
+<p>Эмне үчүн керек: бир эле кодду кайталабайбыз, программа майда, түшүнүктүү бөлүктөргө бөлүнөт, ар бир бөлүктү өзүнчө текшерүүгө болот. Даяр функцияларды да колдонобуз: <code>len</code>, <code>abs</code>, <code>round</code>, <code>max</code>.</p>`,
+ru:`<p><b>Функция</b> — именованный блок кода для многократного использования. Объявляется через <code>def</code>, принимает параметры и возвращает результат через <code>return</code>. При выполнении <code>return</code> функция сразу завершается.</p>
+<p>Переменные, созданные внутри функции, <b>локальные</b>: снаружи их не видно. Параметру можно задать значение по умолчанию: <code>def hello(name="друг")</code>.</p>
+<p>Зачем нужны: не повторяем один и тот же код, программа делится на небольшие понятные части, каждую можно проверить отдельно. Используем и встроенные функции: <code>len</code>, <code>abs</code>, <code>round</code>, <code>max</code>.</p>`},
+c:`def is_prime(n):
+    if n < 2:
+        return False
+    for d in range(2, int(n ** 0.5) + 1):
+        if n % d == 0:
+            return False
+    return True
+
+for x in range(2, 40):
+    if is_prime(x):
+        print(x, end=" ")`},
+{t:{ky:'Издөө жана сорттоо алгоритмдери',ru:'Алгоритмы поиска и сортировки'},
+b:{ky:`<h4>Издөө</h4><ul><li><b>Сызыктуу издөө</b> элементтерди биринен соң бирин текшерет. Эң начар учурда n салыштыруу керек: татаалдыгы O(n).</li><li><b>Экилик (бинардык) издөө</b> сорттолгон тизменин ортосун карап, ар бир кадамда издөө аймагын экиге кыскартат: O(log n). 1 000 000 элементтен болжол менен 20 кадамда табат.</li></ul>
+<h4>Сорттоо</h4><ul><li><b>Көбүкчө сорттоо</b> — коңшу элементтерди салыштырып, туура эмес турса орун алмаштырат; ар бир өтүүдө эң чоң элемент аягына «калкып чыгат».</li><li><b>Тандоо сорттоосу</b> — калган бөлүктөн эң кичинесин таап, анын ордуна коёт.</li><li><b>Кыстаруу сорттоосу</b> — ар бир кезектеги элементти сорттолгон бөлүккө өз ордуна кыстарат; дээрлик сорттолгон тизмеде тез иштейт.</li></ul>
+<p>Үчөөнүн тең татаалдыгы O(n²). Python'догу даяр <code>sorted(a)</code> жана <code>a.sort()</code> Timsort алгоритмин колдонот: O(n log n). Сорттоо бөлүмүндө аларды салыштырып көрүңүз.</p>`,
+ru:`<h4>Поиск</h4><ul><li><b>Линейный поиск</b> проверяет элементы по очереди. В худшем случае нужно n сравнений: сложность O(n).</li><li><b>Двоичный (бинарный) поиск</b> смотрит на середину отсортированного списка и на каждом шаге сокращает область поиска вдвое: O(log n). Среди 1 000 000 элементов находит примерно за 20 шагов.</li></ul>
+<h4>Сортировка</h4><ul><li><b>Пузырьком</b> — сравнивает соседние элементы и меняет местами, если они стоят неправильно; за каждый проход самый большой элемент «всплывает» в конец.</li><li><b>Выбором</b> — находит минимум в оставшейся части и ставит его на место.</li><li><b>Вставками</b> — каждый очередной элемент вставляет на своё место в отсортированную часть; быстро работает на почти отсортированных списках.</li></ul>
+<p>Сложность всех трёх — O(n²). Встроенные в Python <code>sorted(a)</code> и <code>a.sort()</code> используют Timsort: O(n log n). Сравните их в разделе «Сортировка».</p>`},
+c:`def linear_search(a, x):
+    for i in range(len(a)):
+        if a[i] == x:
+            return i
+    return -1
+
+a = [7, 3, 9, 1, 5]
+print(linear_search(a, 9))   # 2
+print(linear_search(a, 4))   # -1
+print(sorted(a))`,tr:4}
+];
+
+/* ---------- PRACTICALS ---------- */
+const PR=[
+{t:{ky:'Сызыктуу алгоритмдер',ru:'Линейные алгоритмы'},g:{ky:'input/print жана арифметикалык амалдарды колдонууну үйрөнүү.',ru:'Научиться использовать input/print и арифметические операции.'},
+k:{ky:['Эки бүтүн санды киргизип, алардын суммасын, айырмасын, көбөйтүндүсүн жана бөлүндүсүн чыгаргыла.','Тик бурчтуктун жактарын киргизип, периметрин жана аянтын эсептегиле.','Секунддардын санын киргизип, аны саат:мүнөт:секунд түрүндө чыгаргыла (// жана % колдонуп).'],ru:['Ввести два целых числа, вывести их сумму, разность, произведение и частное.','Ввести стороны прямоугольника, вычислить периметр и площадь.','Ввести количество секунд и вывести его в виде часы:минуты:секунды (через // и %).']},
+c:`a = int(input())
+b = int(input())
+print(a + b, a - b, a * b, a / b)`,i:'12\n5'},
+{t:{ky:'Блок-схема түзүү',ru:'Построение блок-схем'},g:{ky:'Алгоритмди блок-схема түрүндө сүрөттөп, андан кийин программага которуу.',ru:'Описать алгоритм блок-схемой и затем перевести его в программу.'},
+k:{ky:['Үч сандын эң чоңун табуунун блок-схемасын тетрадга чийгиле.','1ден n чейинки сандардын суммасынын блок-схемасын түзүп, «Трассировка» бөлүмүндөгү программа менен салыштыргыла.','Ар бир блок-схема боюнча Python программасын жазгыла.'],ru:['Нарисовать в тетради блок-схему поиска наибольшего из трёх чисел.','Построить блок-схему суммы чисел от 1 до n и сравнить с программой в разделе «Трассировка».','По каждой блок-схеме написать программу на Python.']},
+c:`a = int(input())
+b = int(input())
+c = int(input())
+m = a
+if b > m:
+    m = b
+if c > m:
+    m = c
+print(m)`,i:'4\n11\n7'},
+{t:{ky:'Тармакталган алгоритмдер',ru:'Разветвляющиеся алгоритмы'},g:{ky:'if, elif, else жана логикалык амалдарды колдонуу.',ru:'Применение if, elif, else и логических операций.'},
+k:{ky:['Сан жуппу же такпы экенин аныктагыла.','(x, y) чекити координаталык тегиздиктин кайсы чейрегинде жатканын аныктагыла.','Упайды (0–100) 5 баллдык баага айландыргыла; туура эмес упайга ката жөнүндө билдирүү чыгаргыла.'],ru:['Определить, чётное число или нечётное.','Определить, в какой четверти координатной плоскости лежит точка (x, y).','Перевести баллы (0–100) в оценку по 5-балльной шкале; при неверных баллах вывести сообщение об ошибке.']},
+c:`n = int(input())
+if n % 2 == 0:
+    print("жуп / чётное")
+else:
+    print("так / нечётное")`,i:'17'},
+{t:{ky:'while цикли',ru:'Цикл while'},g:{ky:'Кайталоолордун саны белгисиз болгон маселелерди чечүү.',ru:'Решение задач с заранее неизвестным числом повторений.'},
+k:{ky:['Сандын цифраларынын суммасын жана санын тапкыла.','Евклид алгоритми менен эки сандын эң чоң жалпы бөлүүчүсүн (ЭЧЖБ) тапкыла.','Колдонуучу 0 киргизгенге чейин сандарды окуп, алардын суммасын жана орточосун чыгаргыла.'],ru:['Найти сумму и количество цифр числа.','Найти НОД двух чисел алгоритмом Евклида.','Читать числа, пока пользователь не введёт 0, вывести их сумму и среднее.']},
+c:`a = int(input())
+b = int(input())
+while b != 0:
+    a, b = b, a % b
+print("ЭЧЖБ / НОД =", a)`,i:'84\n36'},
+{t:{ky:'for цикли',ru:'Цикл for'},g:{ky:'range() менен иштөө жана кыналган циклдер.',ru:'Работа с range() и вложенные циклы.'},
+k:{ky:['n! (факториалды) эсептегиле.','1ден 9га чейинки толук көбөйтүү таблицасын чыгаргыла (кыналган цикл).','1ден 100гө чейинки 7ге бөлүнгөн сандарды жана алардын санын чыгаргыла.'],ru:['Вычислить n! (факториал).','Вывести полную таблицу умножения от 1 до 9 (вложенный цикл).','Вывести числа от 1 до 100, делящиеся на 7, и их количество.']},
+c:`n = int(input())
+f = 1
+for i in range(1, n + 1):
+    f = f * i
+print(n, "! =", f)`,i:'6'},
+{t:{ky:'Тизмелер',ru:'Списки'},g:{ky:'Тизмелерди түзүү, айлануу жана иштетүү.',ru:'Создание, обход и обработка списков.'},
+k:{ky:['Тизменин элементтеринин орточо маанисин тапкыла (sum жана len колдонбой, цикл менен).','Эң чоң элементти жана анын индексин тапкыла.','Тизмедеги терс сандарды санап, аларды нөл менен алмаштыргыла.'],ru:['Найти среднее значение элементов списка (циклом, без sum и len).','Найти наибольший элемент и его индекс.','Посчитать отрицательные числа в списке и заменить их нулями.']},
+c:`a = [4, -2, 9, 0, -7, 5]
+mx, idx = a[0], 0
+for i in range(len(a)):
+    if a[i] > mx:
+        mx, idx = a[i], i
+print("max =", mx, "index =", idx)`},
+{t:{ky:'Саптар',ru:'Строки'},g:{ky:'Саптарды индекс, кесим жана методдор менен иштетүү.',ru:'Обработка строк с помощью индексов, срезов и методов.'},
+k:{ky:['Сөз палиндром экенин текшергиле (мисалы, «казак»).','Сүйлөмдөгү үндүү тамгалардын санын тапкыла.','Сүйлөмдөгү сөздөрдүн санын жана эң узун сөздү тапкыла.'],ru:['Проверить, является ли слово палиндромом (например, «шалаш»).','Посчитать количество гласных в предложении.','Найти количество слов в предложении и самое длинное слово.']},
+c:`s = input().lower()
+if s == s[::-1]:
+    print("палиндром")
+else:
+    print("палиндром эмес / не палиндром")`,i:'казак'},
+{t:{ky:'Функциялар',ru:'Функции'},g:{ky:'Өз функцияларын жазуу, параметрлер жана return.',ru:'Написание собственных функций, параметры и return.'},
+k:{ky:['is_prime(n) функциясын жазып, 1ден 100гө чейинки жөнөкөй сандарды чыгаргыла.','Тегеректин, квадраттын жана үч бурчтуктун аянтын эсептеген үч функция жазгыла.','fact(n) функциясын жазып, анын жардамы менен C(n, k) = n! / (k!(n−k)!) эсептегиле.'],ru:['Написать функцию is_prime(n) и вывести простые числа от 1 до 100.','Написать три функции для площади круга, квадрата и треугольника.','Написать функцию fact(n) и с её помощью вычислить C(n, k) = n! / (k!(n−k)!).']},
+c:`def fact(n):
+    f = 1
+    for i in range(2, n + 1):
+        f *= i
+    return f
+
+n, k = 5, 2
+print(fact(n) // (fact(k) * fact(n - k)))`},
+{t:{ky:'Сорттоо алгоритмдери',ru:'Алгоритмы сортировки'},g:{ky:'Сорттоо алгоритмдерин ишке ашыруу жана натыйжалуулугун салыштыруу.',ru:'Реализовать алгоритмы сортировки и сравнить их эффективность.'},
+k:{ky:['Көбүкчө сорттоону жазып, салыштыруулардын санын эсептегиле.','Тандоо сорттоосун жазгыла.','«Сорттоо» бөлүмүндө үч алгоритмди бир эле тизмеде салыштырып, жыйынтыкты таблица түрүндө жазгыла.'],ru:['Написать сортировку пузырьком и подсчитать число сравнений.','Написать сортировку выбором.','В разделе «Сортировка» сравнить три алгоритма на одном списке и записать итоги в таблицу.']},
+c:`a = [5, 2, 9, 1, 7, 3]
+cmp = 0
+n = len(a)
+for i in range(n - 1):
+    for j in range(n - 1 - i):
+        cmp += 1
+        if a[j] > a[j + 1]:
+            a[j], a[j + 1] = a[j + 1], a[j]
+print(a, "салыштыруу / сравнений:", cmp)`},
+{t:{ky:'Издөө жана жыйынтыктоочу долбоор',ru:'Поиск и итоговый проект'},g:{ky:'Издөө алгоритмдерин колдонуу жана бүтүн программа түзүү.',ru:'Применить алгоритмы поиска и создать законченную программу.'},
+k:{ky:['Сызыктуу издөө функциясын жазгыла.','Экилик издөөнү жазып, кадамдардын санын чыгаргыла.','Мини-долбоор: студенттердин баалар журналы — меню аркылуу кошуу, тизмени көрсөтүү, орточо баа, эң мыкты студентти издөө.'],ru:['Написать функцию линейного поиска.','Написать бинарный поиск и вывести число шагов.','Мини-проект: журнал оценок студентов — меню: добавить, показать список, средний балл, поиск лучшего студента.']},
+c:`a = [2, 5, 8, 12, 16, 23, 38, 47]
+x = int(input())
+lo, hi, steps = 0, len(a) - 1, 0
+pos = -1
+while lo <= hi:
+    steps += 1
+    mid = (lo + hi) // 2
+    if a[mid] == x:
+        pos = mid
+        break
+    elif a[mid] < x:
+        lo = mid + 1
+    else:
+        hi = mid - 1
+print("index:", pos, "steps:", steps)`,i:'23'}
+];
+
+/* ---------- TRACER ---------- */
+const fmt=v=>Array.isArray(v)?'['+v.join(', ')+']':v===true?'True':v===false?'False':String(v);
+const clone=o=>JSON.parse(JSON.stringify(o));
+function rec(){const S=[];let out='';return{S,pr(s){out+=s+'\n'},snap(l,V,ky,ru,hi){S.push({l,v:clone(V),o:out,n:{ky,ru},hi:hi||{}})}}}
+const intIn=(s,lo,hi,d)=>{const n=parseInt(s,10);return Number.isFinite(n)?Math.max(lo,Math.min(hi,n)):d};
+const listIn=(s,d)=>{const a=String(s).split(/[\s,;]+/).map(x=>parseInt(x,10)).filter(Number.isFinite).map(x=>Math.max(-99,Math.min(999,x))).slice(0,8);return a.length>=2?a:d};
+const B=x=>x?'True':'False';
+const PROGS=[
+{name:{ky:'1ден n чейинки сумма',ru:'Сумма от 1 до n'},lab:'n =',def:'5',
+ code:p=>[`n = ${p}`,'s = 0','i = 1','while i <= n:','    s = s + i','    i = i + 1','print(s)'],
+ parse:s=>intIn(s,1,12,5),
+ run(n){const R=rec(),V={};V.n=n;R.snap(0,V,`n өзгөрмөсүнө ${n} ыйгарылды.`,`Переменной n присвоено значение ${n}.`);
+  V.s=0;R.snap(1,V,'Сумма үчүн s = 0 даярдалды.','Для суммы подготовлено s = 0.');V.i=1;R.snap(2,V,'Санагыч i = 1.','Счётчик i = 1.');
+  for(;;){const c=V.i<=V.n;R.snap(3,V,`Шарт текшерилет: i <= n → ${V.i} <= ${V.n} → ${B(c)}`+(c?'. Циклдин денеси аткарылат.':'. Цикл бүттү.'),`Проверка условия: i <= n → ${V.i} <= ${V.n} → ${B(c)}`+(c?'. Выполняется тело цикла.':'. Цикл завершён.'));if(!c)break;
+   const o=V.s;V.s+=V.i;R.snap(4,V,`s = ${o} + ${V.i} = ${V.s}`,`s = ${o} + ${V.i} = ${V.s}`);V.i++;R.snap(5,V,`i = ${V.i-1} + 1 = ${V.i}`,`i = ${V.i-1} + 1 = ${V.i}`)}
+  R.pr(V.s);R.snap(6,V,`Экранга ${V.s} чыгарылды. Программа аяктады.`,`На экран выведено ${V.s}. Программа завершена.`);return R.S}},
+{name:{ky:'Факториал (for)',ru:'Факториал (for)'},lab:'n =',def:'5',
+ code:p=>[`n = ${p}`,'f = 1','for i in range(1, n + 1):','    f = f * i','print(f)'],
+ parse:s=>intIn(s,0,12,5),
+ run(n){const R=rec(),V={};V.n=n;R.snap(0,V,`n = ${n}`,`n = ${n}`);V.f=1;R.snap(1,V,'f = 1: көбөйтүндү 1ден башталат (0 эмес!).','f = 1: произведение начинается с 1 (не с 0!).');
+  for(let i=1;i<=n;i++){V.i=i;R.snap(2,V,`range(1, ${n+1}) ичинен кезектеги маани алынды: i = ${i}`,`Из range(1, ${n+1}) взято очередное значение: i = ${i}`);const o=V.f;V.f*=i;R.snap(3,V,`f = ${o} * ${i} = ${V.f}`,`f = ${o} * ${i} = ${V.f}`)}
+  R.snap(2,V,'range ичинде маани калган жок — цикл бүттү.','В range не осталось значений — цикл завершён.');R.pr(V.f);R.snap(4,V,`Экранга ${n}! = ${V.f} чыгарылды.`,`На экран выведено ${n}! = ${V.f}.`);return R.S}},
+{name:{ky:'Тизменин эң чоң элементи',ru:'Максимум в списке'},lab:'a =',def:'3, 8, 1, 9, 4',
+ code:p=>[`a = [${p.join(', ')}]`,'m = a[0]','for x in a:','    if x > m:','        m = x','print(m)'],
+ parse:s=>listIn(s,[3,8,1,9,4]),
+ run(a){const R=rec(),V={};V.a=a.slice();R.snap(0,V,`${a.length} элементтен турган тизме түзүлдү.`,`Создан список из ${a.length} элементов.`);V.m=a[0];R.snap(1,V,`Азырынча эң чоңу — биринчи элемент: m = ${a[0]}`,`Пока максимум — первый элемент: m = ${a[0]}`,{0:'m'});
+  a.forEach((x,k)=>{V.x=x;R.snap(2,V,`x = a[${k}] = ${x}`,`x = a[${k}] = ${x}`,{[k]:'x'});const c=x>V.m;R.snap(3,V,`${x} > ${V.m} → ${B(c)}`,`${x} > ${V.m} → ${B(c)}`,{[k]:'x'});if(c){V.m=x;R.snap(4,V,`Жаңы эң чоң маани табылды: m = ${x}`,`Найден новый максимум: m = ${x}`,{[k]:'x'})}});
+  R.pr(V.m);R.snap(5,V,`Экранга ${V.m} чыгарылды.`,`На экран выведено ${V.m}.`);return R.S}},
+{name:{ky:'Көбүкчө сорттоо',ru:'Сортировка пузырьком'},lab:'a =',def:'5, 2, 4, 1, 3',
+ code:p=>[`a = [${p.join(', ')}]`,'n = len(a)','for i in range(n - 1):','    for j in range(n - 1 - i):','        if a[j] > a[j + 1]:','            a[j], a[j + 1] = a[j + 1], a[j]','print(a)'],
+ parse:s=>listIn(s,[5,2,4,1,3]),
+ run(a0){const R=rec(),V={},a=a0.slice();V.a=a;R.snap(0,V,'Сорттоло турган тизме.','Список для сортировки.');V.n=a.length;R.snap(1,V,`n = len(a) = ${a.length}`,`n = len(a) = ${a.length}`);
+  for(let i=0;i<a.length-1;i++){V.i=i;delete V.j;R.snap(2,V,`${i+1}-өтүү: i = ${i}`,`Проход ${i+1}: i = ${i}`);
+   for(let j=0;j<a.length-1-i;j++){V.j=j;const h={[j]:'j',[j+1]:'j+1'};R.snap(3,V,`j = ${j}: a[${j}] жана a[${j+1}] салыштырылат.`,`j = ${j}: сравниваются a[${j}] и a[${j+1}].`,h);const c=a[j]>a[j+1];
+    R.snap(4,V,`${a[j]} > ${a[j+1]} → ${B(c)}`+(c?' — орун алмаштыруу керек.':' — ордунда калат.'),`${a[j]} > ${a[j+1]} → ${B(c)}`+(c?' — нужно поменять местами.':' — остаются на месте.'),h);
+    if(c){[a[j],a[j+1]]=[a[j+1],a[j]];R.snap(5,V,`Орун алмаштырылды: [${a.join(', ')}]`,`Поменяли местами: [${a.join(', ')}]`,h)}}}
+  R.pr('['+a.join(', ')+']');R.snap(6,V,'Тизме сорттолду.','Список отсортирован.');return R.S}},
+{name:{ky:'Экилик издөө',ru:'Бинарный поиск'},lab:'x =',def:'23',
+ code:p=>['a = [2, 5, 8, 12, 16, 23, 38, 47]',`x = ${p}`,'lo, hi = 0, len(a) - 1','pos = -1','while lo <= hi:','    mid = (lo + hi) // 2','    if a[mid] == x:','        pos = mid','        break','    elif a[mid] < x:','        lo = mid + 1','    else:','        hi = mid - 1','print(pos)'],
+ parse:s=>intIn(s,-99,999,23),
+ run(x){const R=rec(),V={},a=[2,5,8,12,16,23,38,47];const H=()=>{const h={};const add=(k,l)=>{if(k>=0&&k<a.length)h[k]=h[k]?h[k]+','+l:l};add(V.lo,'lo');add(V.hi,'hi');if(V.mid!=null)add(V.mid,'mid');return h};
+  V.a=a;R.snap(0,V,'Тизме сорттолгон: экилик издөөнүн милдеттүү шарты.','Список отсортирован: обязательное условие бинарного поиска.');V.x=x;R.snap(1,V,`Изделүүчү маани: x = ${x}`,`Искомое значение: x = ${x}`);
+  V.lo=0;V.hi=a.length-1;R.snap(2,V,`Издөө аймагы: 0дөн ${a.length-1} чейин.`,`Область поиска: от 0 до ${a.length-1}.`,H());V.pos=-1;R.snap(3,V,'pos = -1: азырынча табылган жок.','pos = -1: пока не найдено.',H());
+  for(;;){const c=V.lo<=V.hi;R.snap(4,V,`lo <= hi → ${V.lo} <= ${V.hi} → ${B(c)}`,`lo <= hi → ${V.lo} <= ${V.hi} → ${B(c)}`,H());if(!c)break;
+   V.mid=Math.floor((V.lo+V.hi)/2);R.snap(5,V,`mid = (${V.lo} + ${V.hi}) // 2 = ${V.mid}, a[mid] = ${a[V.mid]}`,`mid = (${V.lo} + ${V.hi}) // 2 = ${V.mid}, a[mid] = ${a[V.mid]}`,H());
+   const e=a[V.mid]===x;R.snap(6,V,`${a[V.mid]} == ${x} → ${B(e)}`,`${a[V.mid]} == ${x} → ${B(e)}`,H());
+   if(e){V.pos=V.mid;R.snap(7,V,`Табылды! pos = ${V.mid}`,`Найдено! pos = ${V.mid}`,H());R.snap(8,V,'break — циклден чыгабыз.','break — выходим из цикла.',H());break}
+   const lt=a[V.mid]<x;R.snap(9,V,`${a[V.mid]} < ${x} → ${B(lt)}`,`${a[V.mid]} < ${x} → ${B(lt)}`,H());
+   if(lt){V.lo=V.mid+1;R.snap(10,V,`Сол жарымын таштайбыз: lo = ${V.lo}`,`Отбрасываем левую половину: lo = ${V.lo}`,H())}else{R.snap(11,V,'else бутагы.','Ветка else.',H());V.hi=V.mid-1;R.snap(12,V,`Оң жарымын таштайбыз: hi = ${V.hi}`,`Отбрасываем правую половину: hi = ${V.hi}`,H())}}
+  R.pr(V.pos);R.snap(13,V,V.pos<0?'Экранга -1 чыгарылды: тизмеде мындай маани жок.':`Экранга ${V.pos} чыгарылды — элементтин индекси.`,V.pos<0?'Выведено -1: такого значения в списке нет.':`Выведено ${V.pos} — индекс элемента.`);return R.S}}
+];
+let PI=0,inVal=PROGS[0].parse(PROGS[0].def),ST=[],SI=0,trTimer=null;
+const trIn=$('#trIn');
+function trBuild(){const P=PROGS[PI];ST=P.run(inVal);SI=0;$('#code').innerHTML=P.code(inVal).map((l,k)=>`<div data-l="${k}"><span class="n">${k+1}</span>${esc(l)}</div>`).join('');trRender()}
+function trRender(){const s=ST[SI],p=ST[SI-1];
+ document.querySelectorAll('#code div').forEach(d=>d.classList.toggle('cur',+d.dataset.l===s.l));
+ $('#note').innerHTML=`<span class="k">${esc(t('step'))} ${SI+1} · ${esc(L==='ky'?'сап':'строка')} ${s.l+1}</span>${esc(s.n[L])}`;
+ $('#vars').innerHTML=Object.keys(s.v).map(k=>{const ch=!p||fmt(p.v[k])!==fmt(s.v[k]);return`<tr><td class="mono">${esc(k)}</td><td class="mono${ch?' chg':''}">${esc(fmt(s.v[k]))}</td></tr>`}).join('');
+ const ar=$('#arr');if(Array.isArray(s.v.a)){ar.hidden=false;ar.innerHTML=s.v.a.map((v,k)=>`<div class="cell${s.hi[k]?' on':''}"><div class="t">${esc(s.hi[k]||'')}</div><div class="v">${esc(v)}</div><div class="i">${k}</div></div>`).join('')}else ar.hidden=true;
+ $('#out').textContent=s.o||' ';
+ $('#cnt').textContent=`${SI+1} / ${ST.length}`;$('#trBar').style.width=((SI+1)/ST.length*100)+'%';
+ $('#bPrev').disabled=SI===0;$('#bNext').disabled=SI===ST.length-1;
+ const cur=document.querySelector('#code .cur');if(cur&&trTimer)cur.scrollIntoView({block:'nearest'})}
+function trStop(){clearInterval(trTimer);trTimer=null;$('#bPlay').textContent=t('play')}
+function trProgs(){$('#progs').innerHTML=PROGS.map((p,k)=>`<button type="button" data-k="${k}" aria-pressed="${k===PI}">${esc(p.name[L])}</button>`).join('')}
+$('#progs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;selProg(+b.dataset.k)});
+function selProg(k){trStop();PI=k;const P=PROGS[k];inVal=P.parse(P.def);trIn.value=P.def;$('#trInL').textContent=P.lab;trProgs();trBuild()}
+$('#trApply').onclick=()=>{trStop();const P=PROGS[PI];inVal=P.parse(trIn.value);trIn.value=Array.isArray(inVal)?inVal.join(', '):inVal;trBuild()};
+trIn.addEventListener('keydown',e=>{if(e.key==='Enter')$('#trApply').click()});
+$('#bNext').onclick=()=>{if(SI<ST.length-1){SI++;trRender()}};
+$('#bPrev').onclick=()=>{trStop();if(SI>0){SI--;trRender()}};
+$('#bReset').onclick=()=>{trStop();SI=0;trRender()};
+$('#bPlay').onclick=()=>{if(trTimer){trStop();return}if(SI>=ST.length-1)SI=0;$('#bPlay').textContent=t('pause');trTimer=setInterval(()=>{if(SI<ST.length-1){SI++;trRender()}else trStop()},750)};
+
+/* ---------- LECTURES RENDER ---------- */
+let LI=0;
+function lecRender(){
+ $('#toc').innerHTML=LECT.map((l,k)=>`<button type="button" data-k="${k}" aria-pressed="${k===LI}">${k+1}. ${esc(l.t[L])}</button>`).join('');
+ const l=LECT[LI],code=tx(l.c);
+ $('#lec').innerHTML=`<div class="num">${esc(t('lect'))} ${LI+1} / ${LECT.length}</div><h3 style="font-size:26px;margin:4px 0 14px">${esc(l.t[L])}</h3>${l.b[L]}${code?`<pre><code>${esc(code)}</code></pre>`:''}<div class="acts">${code&&l.py!==false?`<button type="button" id="lecPy">${esc(t('openPy'))}</button>`:''}${l.tr!=null?`<button type="button" id="lecTr">${esc(t('openTr'))}</button>`:''}</div>`;
+ const bp=$('#lecPy');if(bp)bp.onclick=()=>openPy(code,l.inp||'');
+ const bt=$('#lecTr');if(bt)bt.onclick=()=>{selProg(l.tr);location.hash='trace';document.getElementById('trace').scrollIntoView()}}
+$('#toc').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;LI=+b.dataset.k;lecRender();if(innerWidth>760)document.getElementById('lectures').scrollIntoView()});
+
+/* ---------- PRACTICE ---------- */
+let DONE=store.get('done',[]);
+function prRender(){
+ $('#pgrid').innerHTML=PR.map((p,k)=>`<div class="panel pw${DONE.includes(k)?' done':''}"><div class="hd"><h3>${esc(p.t[L])}</h3><span class="no">${esc(t('pw'))}-${k+1}</span></div><div class="goal"><b>${esc(t('goal'))}:</b> ${esc(p.g[L])}</div><ol>${p.k[L].map(x=>`<li>${esc(x)}</li>`).join('')}</ol><div class="ft"><button type="button" data-py="${k}">${esc(t('openPy'))}</button><label class="chk"><input type="checkbox" data-dn="${k}"${DONE.includes(k)?' checked':''}>${esc(t('done'))}</label></div></div>`).join('');
+ stats()}
+$('#pgrid').addEventListener('click',e=>{const b=e.target.closest('[data-py]');if(b){const p=PR[+b.dataset.py];openPy(p.c,p.i||'')}});
+$('#pgrid').addEventListener('change',e=>{const c=e.target.closest('[data-dn]');if(!c)return;const k=+c.dataset.dn;DONE=c.checked?[...new Set([...DONE,k])]:DONE.filter(x=>x!==k);store.set('done',DONE);c.closest('.pw').classList.toggle('done',c.checked);stats()});
+function stats(){$('#stats').innerHTML=`<span><b>${LECT.length}</b>${esc(t('stL'))}</span><span><b>${PR.length}</b>${esc(t('stP'))}</span><span><b>${QS.length}</b>${esc(t('stT'))}</span><span><b>${DONE.length}/${PR.length}</b>${esc(t('stD'))}</span>`}
+
+/* ---------- SORT ---------- */
+const ALG={bubble:{ky:'Көбүкчө сорттоо',ru:'Пузырьком'},selection:{ky:'Тандоо сорттоосу',ru:'Выбором'},insertion:{ky:'Кыстаруу сорттоосу',ru:'Вставками'}};
+const AINFO={bubble:{ky:'Коңшу элементтерди салыштырат; ар бир өтүүдө эң чоңу аягына жылат. O(n²).',ru:'Сравнивает соседей; за каждый проход наибольший уходит в конец. O(n²).'},selection:{ky:'Калган бөлүктөн эң кичинесин издеп, алдыга коёт. Орун алмаштыруу аз, салыштыруу көп. O(n²).',ru:'Ищет минимум в оставшейся части и ставит вперёд. Мало перестановок, много сравнений. O(n²).'},insertion:{ky:'Ар бир элементти солдогу сорттолгон бөлүккө кыстарат. Дээрлик сорттолгон тизмеде эң тез. O(n²).',ru:'Вставляет каждый элемент в отсортированную часть слева. Быстрее всех на почти отсортированных данных. O(n²).'}};
+let base=[],sa=[],ops=[],oi=0,sT=null,mc=0,ms=0,sd=new Set(),mark={};
+const sAlg=$('#sAlg');
+function shuffle(){base=Array.from({length:12},()=>5+Math.floor(Math.random()*95));sReset()}
+function genOps(){const a=base.slice(),o=[],n=a.length,sw=(i,j)=>{[a[i],a[j]]=[a[j],a[i]];o.push(['s',i,j])};
+ if(sAlg.value==='bubble'){for(let i=0;i<n-1;i++){for(let j=0;j<n-1-i;j++){o.push(['c',j,j+1]);if(a[j]>a[j+1])sw(j,j+1)}o.push(['d',n-1-i])}}
+ else if(sAlg.value==='selection'){for(let i=0;i<n-1;i++){let m=i;for(let j=i+1;j<n;j++){o.push(['c',m,j]);if(a[j]<a[m])m=j}if(m!==i)sw(i,m);o.push(['d',i])}}
+ else{for(let i=1;i<n;i++){let j=i;while(j>0){o.push(['c',j-1,j]);if(a[j-1]>a[j]){sw(j-1,j);j--}else break}}}
+ o.push(['all']);return o}
+function sReset(){sStop();sa=base.slice();ops=genOps();oi=0;mc=0;ms=0;sd=new Set();mark={};sRender()}
+function sRender(){const mx=Math.max(...sa);$('#sv').innerHTML=sa.map((v,k)=>`<div class="${sd.has(k)?'d':mark[k]||''}" style="height:${Math.max(6,v/mx*88)}%"><span>${v}</span></div>`).join('');$('#mC').textContent=mc;$('#mS').textContent=ms;$('#sStep').disabled=oi>=ops.length}
+function sOne(){if(oi>=ops.length){sStop();return}const o=ops[oi++];mark={};
+ if(o[0]==='c'){mc++;mark[o[1]]='c';mark[o[2]]='c'}else if(o[0]==='s'){ms++;[sa[o[1]],sa[o[2]]]=[sa[o[2]],sa[o[1]]];mark[o[1]]='s';mark[o[2]]='s'}else if(o[0]==='d')sd.add(o[1]);else sa.forEach((_,k)=>sd.add(k));
+ sRender();if(oi>=ops.length)sStop()}
+function sStop(){clearTimeout(sT);sT=null;$('#sPlay').textContent=t('play')}
+function sLoop(){sOne();if(sT!==null&&oi<ops.length)sT=setTimeout(sLoop,620-$('#sSpd').value*58)}
+$('#sPlay').onclick=()=>{if(sT!==null){sStop();return}if(oi>=ops.length){sa=base.slice();ops=genOps();oi=0;mc=0;ms=0;sd=new Set();mark={}}$('#sPlay').textContent=t('pause');sT=0;sLoop()};
+$('#sStep').onclick=()=>{sStop();sOne()};
+$('#sShuf').onclick=shuffle;
+sAlg.onchange=()=>{sReset();sInfo()};
+function sAlgOpts(){const v=sAlg.value||'bubble';sAlg.innerHTML=Object.keys(ALG).map(k=>`<option value="${k}">${esc(ALG[k][L])}</option>`).join('');sAlg.value=v;sInfo()}
+function sInfo(){$('#sInfo').textContent=AINFO[sAlg.value][L]}
+
+/* ---------- PYTHON SANDBOX ---------- */
+const sbCode=$('#sbCode'),sbIn=$('#sbIn'),sbOut=$('#sbOut'),sbSt=$('#sbSt');
+const EX=()=>[{n:L==='ky'?'Мисал: салам':'Пример: привет',c:L==='ky'?`name = input("Атыңыз: ")\nprint("Салам,", name + "!")\nfor i in range(3):\n    print(i + 1, "— Python үйрөнөбүз")`:`name = input("Ваше имя: ")\nprint("Привет,", name + "!")\nfor i in range(3):\n    print(i + 1, "— изучаем Python")`,i:L==='ky'?'Айгерим':'Айгерим'},...PR.map((p,k)=>({n:`${t('pw')}-${k+1}. ${p.t[L]}`,c:p.c,i:p.i||''}))];
+function sbOpts(){const v=sbEx.value;sbEx.innerHTML=EX().map((e,k)=>`<option value="${k}">${esc(e.n)}</option>`).join('');if(v)sbEx.value=v}
+const sbEx=$('#sbEx');
+sbEx.onchange=()=>{const e=EX()[+sbEx.value];sbCode.value=e.c;sbIn.value=e.i};
+function openPy(c,i){sbCode.value=c;sbIn.value=i;document.getElementById('python').scrollIntoView();sbCode.focus({preventScroll:true})}
+let py=null,pyP=null;
+function loadPy(){if(pyP)return pyP;pyP=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';s.onload=()=>{window.loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'}).then(res,rej)};s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});pyP.then(p=>{py=p},()=>{pyP=null});return pyP}
+const PRE=`import builtins
+_it = iter(__stdin.split("\\n")) if __stdin else iter([])
+def _inp(p=""):
+    print(p, end="")
+    try:
+        v = next(_it)
+    except StopIteration:
+        raise EOFError("input(): маалымат жетишсиз / не хватает входных данных")
+    print(v)
+    return v
+builtins.input = _inp`;
+$('#sbRun').onclick=async()=>{const b=$('#sbRun');b.disabled=true;let out='';
+ try{if(!py){sbSt.textContent=t('loading');await loadPy()}sbSt.textContent=t('running');
+  py.setStdout({batched:s=>{out+=s+'\n'}});py.setStderr({batched:s=>{out+=s+'\n'}});
+  py.globals.set('__stdin',sbIn.value.replace(/\r/g,''));py.runPython(PRE);
+  await py.runPythonAsync(sbCode.value);sbOut.textContent=out||' ';sbSt.textContent=t('ready')}
+ catch(e){const m=String(e&&e.message||e);if(!py){sbSt.textContent=t('loadErr');sbOut.textContent=out}else{const ls=m.split('\n');const k=ls.findIndex(x=>x.includes('<exec>'));sbOut.textContent=out+(k>=0?ls.slice(k).join('\n'):ls.slice(-3).join('\n'));sbSt.textContent=''}}
+ b.disabled=false};
+$('#sbClr').onclick=()=>{sbOut.textContent=' '};
+sbCode.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=sbCode.selectionStart;sbCode.setRangeText('    ',s,sbCode.selectionEnd,'end')}if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('#sbRun').click()}});
+
+/* ---------- TESTS ---------- */
+const QS=[
+{q:{ky:'Алгоритмдин кайсы касиети ал чектүү сандагы кадамдан кийин натыйжа берерин билдирет?',ru:'Какое свойство алгоритма означает, что он даёт результат за конечное число шагов?'},o:{ky:['Дискреттүүлүк','Натыйжалуулук','Массалуулук','Түшүнүктүүлүк'],ru:['Дискретность','Результативность','Массовость','Понятность']},a:1,e:{ky:'Натыйжалуулук — алгоритм чексиз иштебей, чектүү кадамдан кийин жыйынтык берет.',ru:'Результативность — алгоритм не работает бесконечно, а за конечное число шагов выдаёт результат.'}},
+{q:{ky:'Блок-схемада шарт (чечим) кайсы фигура менен белгиленет?',ru:'Какой фигурой в блок-схеме обозначается условие (решение)?'},o:{ky:['Тик бурчтук','Ромб','Параллелограмм','Овал'],ru:['Прямоугольник','Ромб','Параллелограмм','Овал']},a:1,e:{ky:'Ромбдун эки чыгуусу бар: «ооба» жана «жок».',ru:'У ромба два выхода: «да» и «нет».'}},
+{q:{ky:'print(7 // 2) эмнени чыгарат?',ru:'Что выведет print(7 // 2)?'},o:{ky:['3.5','3','4','1'],ru:['3.5','3','4','1']},a:1,e:{ky:'// — бүтүн бөлүү, бөлчөк бөлүгү ташталат.',ru:'// — целочисленное деление, дробная часть отбрасывается.'}},
+{q:{ky:'print(17 % 5) эмнени чыгарат?',ru:'Что выведет print(17 % 5)?'},o:{ky:['3','2','3.4','5'],ru:['3','2','3.4','5']},a:1,e:{ky:'17 = 5·3 + 2, калдык 2.',ru:'17 = 5·3 + 2, остаток 2.'}},
+{q:{ky:'type(3.0) кайсы типти кайтарат?',ru:'Какой тип вернёт type(3.0)?'},o:{ky:['int','float','str','bool'],ru:['int','float','str','bool']},a:1,e:{ky:'Чекити бар сан — float.',ru:'Число с точкой — float.'}},
+{q:{ky:'x = "5" + "5"; print(x) — натыйжасы кандай?',ru:'x = "5" + "5"; print(x) — каков результат?'},o:{ky:['10','55','Ката','5 5'],ru:['10','55','Ошибка','5 5']},a:1,e:{ky:'Саптар үчүн + аларды бириктирет (конкатенация).',ru:'Для строк + выполняет склеивание (конкатенацию).'}},
+{q:{ky:'Эмне үчүн age = input() жазуусунан кийин age + 1 ката берет?',ru:'Почему после age = input() выражение age + 1 даёт ошибку?'},o:{ky:['input() сап кайтарат','input() бүтүн сан кайтарат','Өзгөрмөнүн аты туура эмес','+ амалы жок'],ru:['input() возвращает строку','input() возвращает целое число','Неправильное имя переменной','Нет операции +']},a:0,e:{ky:'Сапка санды кошууга болбойт: int(input()) колдонуу керек.',ru:'К строке нельзя прибавить число: нужно int(input()).'}},
+{q:{ky:'range(2, 10, 3) кайсы сандарды берет?',ru:'Какие числа даёт range(2, 10, 3)?'},o:{ky:['2, 5, 8','2, 5, 8, 11','3, 6, 9','2, 3, …, 10'],ru:['2, 5, 8','2, 5, 8, 11','3, 6, 9','2, 3, …, 10']},a:0,e:{ky:'2ден баштап 3 кадам менен, 10 кирбейт.',ru:'Начиная с 2 с шагом 3, 10 не входит.'}},
+{q:{ky:'i = 0\nwhile i < 5:\n    i += 2\nЦикл канча жолу аткарылат?',ru:'i = 0\nwhile i < 5:\n    i += 2\nСколько раз выполнится цикл?'},o:{ky:['2','3','5','Чексиз'],ru:['2','3','5','Бесконечно']},a:1,e:{ky:'i: 0 → 2 → 4 → 6. Үч кайталоодон кийин шарт False болот.',ru:'i: 0 → 2 → 4 → 6. После трёх повторений условие становится False.'}},
+{q:{ky:'a = [4, 7, 1]; a.append(9); print(len(a))',ru:'a = [4, 7, 1]; a.append(9); print(len(a))'},o:{ky:['3','4','9','5'],ru:['3','4','9','5']},a:1,e:{ky:'append аягына бир элемент кошот: 4 элемент.',ru:'append добавляет один элемент в конец: 4 элемента.'}},
+{q:{ky:'s = "Python"; print(s[1:4])',ru:'s = "Python"; print(s[1:4])'},o:{ky:['yth','Pyt','ytho','Pyth'],ru:['yth','Pyt','ytho','Pyth']},a:0,e:{ky:'1, 2, 3-индекстер: y, t, h. 4-индекс кирбейт.',ru:'Индексы 1, 2, 3: y, t, h. Индекс 4 не входит.'}},
+{q:{ky:'not (True and False) эмнеге барабар?',ru:'Чему равно not (True and False)?'},o:{ky:['True','False','None','Ката'],ru:['True','False','None','Ошибка']},a:0,e:{ky:'True and False = False, not False = True.',ru:'True and False = False, not False = True.'}},
+{q:{ky:'Экилик издөөнү колдонуунун милдеттүү шарты кайсы?',ru:'Какое условие обязательно для бинарного поиска?'},o:{ky:['Тизме сорттолгон болушу керек','Тизмеде кайталанма болбошу керек','Узундугу жуп болушу керек','Тизме сандардан гана турушу керек'],ru:['Список должен быть отсортирован','В списке не должно быть повторов','Длина должна быть чётной','Список должен состоять только из чисел']},a:0,e:{ky:'Ортодогу элементке салыштырып, жарымын таштоо сорттолгон тизмеде гана туура.',ru:'Отбрасывать половину по сравнению с серединой можно только в отсортированном списке.'}},
+{q:{ky:'Көбүкчө сорттоонун начар учурдагы татаалдыгы кандай?',ru:'Какова сложность сортировки пузырьком в худшем случае?'},o:{ky:['O(n)','O(log n)','O(n²)','O(n log n)'],ru:['O(n)','O(log n)','O(n²)','O(n log n)']},a:2,e:{ky:'Эки кыналган цикл: болжол менен n²/2 салыштыруу.',ru:'Два вложенных цикла: примерно n²/2 сравнений.'}},
+{q:{ky:'def f(x):\n    return x * 2\nprint(f(f(3)))',ru:'def f(x):\n    return x * 2\nprint(f(f(3)))'},o:{ky:['6','12','9','36'],ru:['6','12','9','36']},a:1,e:{ky:'f(3) = 6, f(6) = 12.',ru:'f(3) = 6, f(6) = 12.'}}
+];
+let ANS=store.get('ans',{}),checked=false;
+function qRender(){
+ $('#qs').innerHTML=QS.map((q,k)=>{const st=checked?(ANS[k]===q.a?' ok':' no'):'';return`<div class="panel q${st}"><div class="qt">${k+1}. ${q.q[L].includes('\n')?`<pre style="margin:6px 0 0;font-weight:400" class="mono">${esc(q.q[L])}</pre>`:esc(q.q[L])}</div>${q.o[L].map((o,j)=>{let c='';if(checked){if(j===q.a)c='right';else if(ANS[k]===j)c='wrong'}return`<label class="${c}"><input type="radio" name="q${k}" value="${j}"${ANS[k]===j?' checked':''}${checked?' disabled':''}><span class="${/[=()\[\]]/.test(o)?'mono':''}">${esc(o)}</span></label>`}).join('')}<div class="ex">${esc(q.e[L])}</div></div>`}).join('');
+ qScore()}
+function qScore(){const best=store.get('best',null);let s=`${Object.keys(ANS).length} / ${QS.length}`;if(checked){const n=QS.filter((q,k)=>ANS[k]===q.a).length;s=`${t('res')}: <b>${n} / ${QS.length}</b> (${Math.round(n/QS.length*100)}%)`}$('#tRes').innerHTML=s+(best!=null?` · ${esc(t('best'))}: ${best}/${QS.length}`:'')}
+$('#qs').addEventListener('change',e=>{const r=e.target;if(r.name&&r.name[0]==='q'){ANS[+r.name.slice(1)]=+r.value;store.set('ans',ANS);qScore()}});
+$('#tChk').onclick=()=>{checked=true;const n=QS.filter((q,k)=>ANS[k]===q.a).length;const b=store.get('best',0);if(n>b)store.set('best',n);qRender()};
+$('#tRst').onclick=()=>{checked=false;ANS={};store.set('ans',ANS);qRender();document.getElementById('test').scrollIntoView()};
+
+/* ---------- REPORT ---------- */
+const rNo=$('#rNo');
+function rOpts(){const v=rNo.value||'0';rNo.innerHTML=PR.map((p,k)=>`<option value="${k}">${esc(t('pw'))}-${k+1}. ${esc(p.t[L])}</option>`).join('');rNo.value=v}
+function rBuild(){const p=PR[+rNo.value||0],k=+rNo.value||0,d=new Date().toLocaleDateString(L==='ky'?'ky-KG':'ru-RU');
+ const lines=[t('repT')+' №'+(k+1),'',`${t('repDisc')}: ${t('title')}`,`${t('repSt')}: ${$('#rName').value||'—'}`,`${t('repGr')}: ${$('#rGroup').value||'—'}`,`${t('repDate')}: ${d}`,'',`${t('repTopic')}: ${p.t[L]}`,`${t('repGoal')}: ${p.g[L]}`,'',t('repTasks')+':',...p.k[L].map((x,i)=>`  ${i+1}. ${x}`),'',t('repCode')+':',$('#rCode').value||'—','',t('repOut')+':',$('#rOut').value||'—','',t('repConc')+':',$('#rConc').value||'—','',`${t('repT2')}: ${t('teacher')} ________`];
+ $('#rPre').textContent=lines.join('\n')}
+$('#rf').addEventListener('input',rBuild);$('#rf').addEventListener('change',rBuild);$('#rf').addEventListener('submit',e=>e.preventDefault());
+$('#rName').value=store.get('name','');$('#rName').addEventListener('change',()=>store.set('name',$('#rName').value));
+$('#rCopy').onclick=async()=>{const b=$('#rCopy');try{await navigator.clipboard.writeText($('#rPre').textContent);b.textContent=t('copied')}catch(e){const r=document.createRange();r.selectNodeContents($('#rPre'));const s=getSelection();s.removeAllRanges();s.addRange(r)}setTimeout(()=>{b.textContent=t('copy')},1600)};
+
+/* ---------- LANGUAGE ---------- */
+function setLang(l){L=l;store.set('lang',l);document.documentElement.lang=l==='ky'?'ky':'ru';document.title=l==='ky'?'Алгоритмдөө жана программалоо':'Алгоритмизация и программирование';
+ document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.dataset.t)});
+ $('#lgKy').setAttribute('aria-pressed',l==='ky');$('#lgRu').setAttribute('aria-pressed',l==='ru');
+ if(trTimer)$('#bPlay').textContent=t('pause');if(sT!==null)$('#sPlay').textContent=t('pause');
+ trProgs();trRender();lecRender();prRender();sAlgOpts();sbOpts();qRender();rOpts();rBuild()}
+$('#lgKy').onclick=()=>setLang('ky');$('#lgRu').onclick=()=>setLang('ru');
+
+/* ---------- INIT ---------- */
+trIn.value=PROGS[0].def;trBuild();shuffle();
+setLang(L);
+const e0=EX()[0];sbCode.value=e0.c;sbIn.value=e0.i;sbOut.textContent=' ';
+/* jump one sample step so the tracer opens mid-run */
+SI=Math.min(8,ST.length-1);trRender();
+}
+</script>
+</body>
+</html>
